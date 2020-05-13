@@ -1,28 +1,54 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <el-select-more :selectProps="selectProps"
+                    :data="options"
+                    @loadMore="handleLoadMore" />
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import ElSelectMore from './packages/ElementSelectMore'
+import { Axios } from './libs/axios'
 
 export default {
-  name: 'App',
   components: {
-    HelloWorld
-  }
+    ElSelectMore,
+  },
+  data () {
+    return {
+      selectProps: {
+        placeholder: '请选择',
+        label: 'name',
+        value: 'id'
+      },
+      options: [],
+    }
+  },
+  mounted () {
+    this.fetchSelectOptions()
+  },
+  methods: {
+    fetchSelectOptions () {
+      Axios.get('/mock/getList')
+        .then(res => {
+          const { data } = res
+          this.options = [...this.options, ...data]
+        })
+    },
+    handleLoadMore (current) {
+      console.log(current)
+      this.fetchSelectOptions()
+    }
+  },
 }
 </script>
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  height: 100vh;
+  width: 100vw;
 }
 </style>

@@ -2,7 +2,9 @@
   <div id="app">
     <el-select-more :selectProps="selectProps"
                     :data="options"
-                    @loadMore="handleLoadMore" />
+                    :isInit="initFlag"
+                    @loadMore="handleLoadMore"
+                    @change="handleSelectChange" />
   </div>
 </template>
 
@@ -22,22 +24,33 @@ export default {
         value: 'id'
       },
       options: [],
+      initFlag: false,
+      params: {
+        page: 1,
+        size: 10
+      }
     }
   },
   mounted () {
-    this.fetchSelectOptions()
+    this.fetchSelectOptions(this.params)
   },
   methods: {
-    fetchSelectOptions () {
-      Axios.get('/mock/getList')
+    fetchSelectOptions (params) {
+      Axios.post('/mock/getList', params)
         .then(res => {
           const { data } = res
           this.options = [...this.options, ...data]
         })
     },
+    /**
+     * 此方法内调用分页请求后台数据
+     */
     handleLoadMore (current) {
-      console.log(current)
-      this.fetchSelectOptions()
+      this.params.page = current
+      this.fetchSelectOptions(this.params)
+    },
+    handleSelectChange (value) {
+      console.log('change', value)
     }
   },
 }

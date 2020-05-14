@@ -2,7 +2,7 @@
   <el-select v-model="value"
              v-bind="selectMixedProps"
              v-on="$listeners">
-    <el-option v-for="(item, idx) in data"
+    <el-option v-for="(item, idx) in bindData"
                :key="`${item[selectMixedProps.value]}_${idx}`"
                :label="item[selectMixedProps.label]"
                :value="item[selectMixedProps.value]">
@@ -28,12 +28,14 @@ export default {
         return []
       },
     },
+    isInit: {
+      type: Boolean,
+      default: false
+    }
   },
   computed: {
     isShowLoadMoreBtn: function () {
-      if (this.data
-        && this.data.length !== 0
-        || this.data.length < this.selectProps.maxPerItemCount) {
+      if (this.data.length - this.prevData.length === this.selectMixedProps.maxPerItemCount) {
         return true
       } else {
         return false
@@ -50,6 +52,8 @@ export default {
       },
       current: 1,
       value: '',
+      bindData: [],
+      prevData: []
     }
   },
   watch: {
@@ -60,10 +64,28 @@ export default {
       deep: true,
       immediate: true,
     },
+    data: {
+      handler: function (newValue, oldValue) {
+        this.bindData = [...newValue]
+        this.prevData = [...oldValue]
+      },
+      deep: true
+    },
+    isInit: function (newValue) {
+      if (newValue) {
+        this.init()
+      }
+    }
   },
   mounted () { },
 
   methods: {
+    init () {
+      this.value = ''
+      this.current = 1
+      this.prevData = []
+      this.bindData = []
+    },
     loadMore () {
       this.$emit('loadMore', ++this.current)
     }

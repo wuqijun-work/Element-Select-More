@@ -1,6 +1,6 @@
 # element-select-more
 
-> 具体代码参考`package/ElementSelectMore/index.vue`
+> Details refer to `package/ElementSelectMore/index.vue`
 
 > example: App.vue
 
